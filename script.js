@@ -18,15 +18,44 @@ const perguntarAI = async (question, game, apiKey) => {
   `;
 
   const ask = `
-    olha, tenho esse jogo ${game} e queria saber ${question}
+    ## Especialidade
+  Você é um especialista assistente de meta para o jogo ${game}
+    ## Tarefa
+  Você deve responder as perguntas do usuário com base no seu conhecimento no jogo, estratégias, build e dicas.
+    ## Regras
+  = Se você não sabe a resposta, responda com 'Não sei' e não tente inventar uma resposta.
+  - Se a pergunta não está relacionada ao jogo, responda com 'Essa pergunta não está relacionada ao jogo'.
+  - Considere a data atual ${new Date().toLocaleDateString()}.
+  - Faça pesquisas atualizadas sobre o patch atual, baseado na data atual, para dar uma resposta mais coerente.
+  - Nunca responda itens que você não tem certeza que existem no patch atual.
+  - Informe os itens e runas em português-br
+
+    ## Resposta
+  - Economize na resposta, seja direto e responda no máximo 500 caractéres
+  - Responda em markdown.
+  - Não precisa fazer nenhuma saudação oi despedida, apenas responda o que o usuário está querendo.
+
+    ## Exemplos de resposta
+    Pergunta do usuário: Melhor build Rengar jungle
+    resposta: A build mais atual é: \n\n **Itens:**\n\n **coloque os itens aqui**.\n\n **Runas:**\n\n **Coloque as runas aqui**\n\n
+
+    ---
+  Aqui está a pergunta do usuário: ${question}
   `;
   const contents = [
     {
+      role: "user",
       parts: [
         {
           text: ask,
         },
       ],
+    },
+  ];
+
+  const tools = [
+    {
+      google_search: {},
     },
   ];
 
@@ -37,6 +66,7 @@ const perguntarAI = async (question, game, apiKey) => {
     },
     body: JSON.stringify({
       contents,
+      tools,
     }),
   });
   const data = await response.json();
@@ -63,6 +93,7 @@ const sendForm = async (event) => {
     const text = await perguntarAI(question, game, apiKey);
     aiResponse.querySelector(".response-content").innerHTML =
       markDownToHTML(text);
+    aiResponse.classList.remove("hidden");
   } catch (error) {
     console.log("Erro", error);
   } finally {
