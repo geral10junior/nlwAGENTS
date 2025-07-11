@@ -96,11 +96,8 @@ const perguntarAI = async (question, game, apiKey) => {
   let ask = "";
 
   if (game == "leagueOfLegends") {
-    console.log("entrou aqui");
-
     ask = AskLol;
   } else if (game == "valorant") {
-    console.log("entrou aqui");
     ask = AskValorant;
   } else if (game == "CounterStrike2") {
     ask = AskCS;
